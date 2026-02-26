@@ -1331,9 +1331,12 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const text = btn.textContent;
             let price = 0;
-            if (text.includes('2kg')) price = 500;
-            if (text.includes('10kg')) price = 1500;
+            if (text.includes('2 kilos')) price = 500;
+            if (text.includes('10 kilos')) price = 1500;
             if (text.includes('Bolsón')) price = 2500;
+            if (text.includes('12 litros')) price = 0;
+            if (text.includes('20 litros')) price = 0;
+            if (text.includes('Nido')) price = 0;
 
             const manualItem = {
                 id: 'manual-' + Date.now(),
