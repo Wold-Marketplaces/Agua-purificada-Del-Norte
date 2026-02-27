@@ -73,6 +73,7 @@ body {
     position: fixed;
     height: 100vh;
     z-index: 100;
+    overflow: hidden;
 }
 
 .logo {
@@ -102,6 +103,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 6px;
 }
 
 .nav-links li a {

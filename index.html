@@ -118,6 +118,12 @@
                 </li>
                 <li>
                     <a href="#">
+                        <i class='bx bx-wallet'></i>
+                        <span>Caja</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
                         <i class='bx bxs-cog'></i>
                         <span>Respaldo</span>
                     </a>
@@ -989,6 +995,127 @@
                             </thead>
                             <tbody id="employee-sales-summary">
                                 <!-- Dynamic Employee Summary -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="caja-view" style="display: none;">
+                <header>
+                    <div class="mobile-menu-toggle" id="menu-open-caja">
+                        <i class='bx bx-menu'></i>
+                    </div>
+                    <div class="header-title" style="display: flex; align-items: center; gap: 15px;">
+                        <img src="logo de aguas.jpg"
+                            style="height: 50px; width: auto; object-fit: contain; border-radius: 8px; filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.3));">
+                        <div>
+                            <h1>Caja</h1>
+                            <p>Registro de entradas y salidas de caja.</p>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header" style="display:flex; align-items:center; justify-content:space-between; gap: 1rem; flex-wrap:wrap;">
+                        <h3>Balance</h3>
+                        <div style="display:flex; align-items:center; gap: 10px; flex-wrap: wrap;">
+                            <label for="caja-date" style="color: var(--text-muted); font-size: 0.9rem;">Día</label>
+                            <input type="date" id="caja-date"
+                                style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main);">
+                            <label for="caja-month" style="color: var(--text-muted); font-size: 0.9rem;">Mes</label>
+                            <input type="month" id="caja-month"
+                                style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main);">
+                        </div>
+                    </div>
+
+                    <div class="stats-grid" style="padding: 0 1.5rem 1.5rem;">
+                        <div class="stat-card">
+                            <div class="stat-icon revenue"><i class='bx bx-log-in'></i></div>
+                            <div class="stat-details">
+                                <h3>Entradas (Día)</h3>
+                                <h2 id="caja-in-day">$0</h2>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orders"><i class='bx bx-log-out'></i></div>
+                            <div class="stat-details">
+                                <h3>Salidas (Día)</h3>
+                                <h2 id="caja-out-day">$0</h2>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon customers"><i class='bx bx-calculator'></i></div>
+                            <div class="stat-details">
+                                <h3>Saldo (Día)</h3>
+                                <h2 id="caja-balance-day">$0</h2>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon products"><i class='bx bx-calendar'></i></div>
+                            <div class="stat-details">
+                                <h3>Saldo (Mes)</h3>
+                                <h2 id="caja-balance-month">$0</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="max-width: 800px; margin: 0 auto 1.5rem;">
+                    <div class="card-header">
+                        <h3>Nuevo Movimiento</h3>
+                    </div>
+                    <form id="caja-form" style="padding: 1.5rem; display: grid; gap: 1rem;">
+                        <div style="display:flex; gap: 10px; flex-wrap: wrap;">
+                            <div style="flex:1; min-width: 200px;" class="form-group">
+                                <label>Fecha</label>
+                                <input type="date" id="caja-mov-date" required
+                                    style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main); width: 100%;">
+                            </div>
+                            <div style="flex:1; min-width: 200px;" class="form-group">
+                                <label>Tipo</label>
+                                <select id="caja-mov-type" required
+                                    style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main); width: 100%;">
+                                    <option value="entrada">Entrada</option>
+                                    <option value="salida">Salida</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Concepto</label>
+                            <input type="text" id="caja-mov-concept" required placeholder="Ej: Pago de cuenta / Parche cubierta"
+                                style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main); width: 100%;">
+                        </div>
+                        <div class="form-group">
+                            <label>Monto ($)</label>
+                            <input type="number" id="caja-mov-amount" required step="0.01" placeholder="0.00"
+                                style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main); width: 100%;">
+                        </div>
+                        <button type="submit" class="primary-btn" style="width: 100%; padding: 12px; height: auto;">
+                            <i class='bx bx-save'></i> Guardar Movimiento
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Movimientos</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Concepto</th>
+                                    <th>Monto</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="caja-table">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay movimientos</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>

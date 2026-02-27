@@ -35,6 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentProduccionId = null;
     const AGUA_PRODUCCION_KEY = 'agua_produccion';
 
+    const CAJA_KEY = 'repuestospos_caja';
+    let cajaMovs = JSON.parse(localStorage.getItem(CAJA_KEY)) || [];
+
     let config = JSON.parse(localStorage.getItem('repuestospos_config')) || {
         storeName: 'Agua purificada Del Norte',
         storeSlogan: 'Control de Entregas',
@@ -58,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(GOMERIA_STORE_KEY, JSON.stringify(repairs));
         localStorage.setItem(GOMERIA_TURNOS_KEY, JSON.stringify(turnos));
         localStorage.setItem(AGUA_PRODUCCION_KEY, JSON.stringify(produccion));
+        localStorage.setItem(CAJA_KEY, JSON.stringify(cajaMovs));
         updateStats();
         applyBranding();
     }
@@ -76,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inventoryView = document.getElementById('inventory-view');
     const saleView = document.getElementById('sale-view');
     const reportsView = document.getElementById('reports-view');
+    const cajaView = document.getElementById('caja-view');
     const clientsView = document.getElementById('clients-view');
     const employeesView = document.getElementById('employees-view');
     const settingsView = document.getElementById('settings-view');
@@ -85,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const clientsTableBody = document.querySelector('#clients-table tbody');
     const employeesTableBody = document.querySelector('#employees-table tbody');
     const produccionTableBody = document.querySelector('#produccion-table');
+    const cajaTableBody = document.querySelector('#caja-table');
 
     const productModal = document.getElementById('product-modal');
     const clientModal = document.getElementById('client-modal');
@@ -114,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inventoryView.style.display = 'none';
         saleView.style.display = 'none';
         reportsView.style.display = 'none';
+        if (cajaView) cajaView.style.display = 'none';
         clientsView.style.display = 'none';
         employeesView.style.display = 'none';
         settingsView.style.display = 'none';
@@ -149,6 +156,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (viewName === 'Reportes') {
             reportsView.style.display = 'block';
             updateReports();
+        } else if (viewName === 'Caja') {
+            if (cajaView) cajaView.style.display = 'block';
+            initCajaView();
         } else if (viewName === 'Clientes') {
             clientsView.style.display = 'block';
             renderClients();
@@ -184,6 +194,93 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 li.classList.remove('active');
             }
+        });
+    }
+
+    function initCajaView() {
+        cajaMovs = JSON.parse(localStorage.getItem(CAJA_KEY)) || [];
+
+        const dayInput = document.getElementById('caja-date');
+        const monthInput = document.getElementById('caja-month');
+        const movDate = document.getElementById('caja-mov-date');
+
+        const today = new Date().toISOString().split('T')[0];
+        const month = today.slice(0, 7);
+
+        if (dayInput && !dayInput.value) dayInput.value = today;
+        if (monthInput && !monthInput.value) monthInput.value = month;
+        if (movDate && !movDate.value) movDate.value = today;
+
+        if (dayInput) dayInput.onchange = () => renderCaja();
+        if (monthInput) monthInput.onchange = () => renderCaja();
+
+        renderCaja();
+    }
+
+    function renderCaja() {
+        const day = (document.getElementById('caja-date') && document.getElementById('caja-date').value) ? document.getElementById('caja-date').value : new Date().toISOString().split('T')[0];
+        const month = (document.getElementById('caja-month') && document.getElementById('caja-month').value) ? document.getElementById('caja-month').value : new Date().toISOString().split('T')[0].slice(0, 7);
+
+        const dayMovs = cajaMovs.filter(m => (m.date || '').startsWith(day));
+        const monthMovs = cajaMovs.filter(m => (m.date || '').slice(0, 7) === month);
+
+        const inDay = dayMovs.filter(m => m.type === 'entrada').reduce((acc, m) => acc + Number(m.amount || 0), 0);
+        const outDay = dayMovs.filter(m => m.type === 'salida').reduce((acc, m) => acc + Number(m.amount || 0), 0);
+        const balDay = inDay - outDay;
+
+        const inMonth = monthMovs.filter(m => m.type === 'entrada').reduce((acc, m) => acc + Number(m.amount || 0), 0);
+        const outMonth = monthMovs.filter(m => m.type === 'salida').reduce((acc, m) => acc + Number(m.amount || 0), 0);
+        const balMonth = inMonth - outMonth;
+
+        const inDayEl = document.getElementById('caja-in-day');
+        const outDayEl = document.getElementById('caja-out-day');
+        const balDayEl = document.getElementById('caja-balance-day');
+        const balMonthEl = document.getElementById('caja-balance-month');
+
+        if (inDayEl) inDayEl.textContent = `$${inDay.toLocaleString()}`;
+        if (outDayEl) outDayEl.textContent = `$${outDay.toLocaleString()}`;
+        if (balDayEl) balDayEl.textContent = `$${balDay.toLocaleString()}`;
+        if (balMonthEl) balMonthEl.textContent = `$${balMonth.toLocaleString()}`;
+
+        if (!cajaTableBody) return;
+        cajaTableBody.innerHTML = '';
+
+        const ordered = [...dayMovs].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+        if (ordered.length === 0) {
+            cajaTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay movimientos</td></tr>';
+            return;
+        }
+
+        ordered.forEach(m => {
+            const tr = document.createElement('tr');
+            const typeLabel = m.type === 'entrada' ? 'Entrada' : 'Salida';
+            const typeStyle = m.type === 'entrada' ? 'color: var(--success); font-weight: 600;' : 'color: var(--danger); font-weight: 600;';
+            const amountTxt = `$${Number(m.amount || 0).toLocaleString()}`;
+            tr.innerHTML = `
+                <td>${m.date ? new Date(m.date).toLocaleDateString() : ''}</td>
+                <td style="${typeStyle}">${typeLabel}</td>
+                <td>${m.concept || ''}</td>
+                <td>${amountTxt}</td>
+                <td>
+                    <button class="action-btn delete caja-delete" data-id="${m.id}" title="Eliminar Movimiento" style="padding: 5px 10px; font-size: 0.85rem;">
+                        <i class='bx bx-trash'></i> Eliminar
+                    </button>
+                </td>
+            `;
+            cajaTableBody.appendChild(tr);
+        });
+
+        document.querySelectorAll('.caja-delete').forEach(btn => {
+            btn.onclick = () => {
+                const id = btn.dataset.id;
+                if (!id) return;
+                if (confirm('¿Eliminar este movimiento de caja?')) {
+                    cajaMovs = cajaMovs.filter(m => String(m.id) !== String(id));
+                    saveData();
+                    renderCaja();
+                    showToast('Movimiento eliminado');
+                }
+            };
         });
     }
 
@@ -1782,6 +1879,7 @@ document.addEventListener('DOMContentLoaded', () => {
             repairs: repairs,
             turnos: turnos,
             employees: employees,
+            caja: cajaMovs,
             exportDate: new Date().toISOString()
         };
         downloadFile(JSON.stringify(fullData, null, 2), `RepuestosPOS_Backup_${new Date().toISOString().split('T')[0]}.json`, 'application/json');
@@ -1815,6 +1913,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const turnosSheet = XLSX.utils.json_to_sheet(turnos);
         XLSX.utils.book_append_sheet(workbook, turnosSheet, "Turnos");
 
+        const cajaSheet = XLSX.utils.json_to_sheet(cajaMovs);
+        XLSX.utils.book_append_sheet(workbook, cajaSheet, "Caja");
+
         XLSX.writeFile(workbook, `RepuestosPOS_Backup_${new Date().toISOString().split('T')[0]}.xlsx`);
         showToast('Backup Excel generado');
     };
@@ -1841,7 +1942,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         clients: XLSX.utils.sheet_to_json(workbook.Sheets["Clientes"]),
                         employees: workbook.Sheets["Empleados"] ? XLSX.utils.sheet_to_json(workbook.Sheets["Empleados"]) : [],
                         repairs: workbook.Sheets["Reparaciones"] ? XLSX.utils.sheet_to_json(workbook.Sheets["Reparaciones"]) : [],
-                        turnos: workbook.Sheets["Turnos"] ? XLSX.utils.sheet_to_json(workbook.Sheets["Turnos"]) : []
+                        turnos: workbook.Sheets["Turnos"] ? XLSX.utils.sheet_to_json(workbook.Sheets["Turnos"]) : [],
+                        caja: workbook.Sheets["Caja"] ? XLSX.utils.sheet_to_json(workbook.Sheets["Caja"]) : []
                     };
                 } else {
                     importedData = JSON.parse(event.target.result);
@@ -1855,6 +1957,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         employees = importedData.employees || [];
                         repairs = importedData.repairs || [];
                         turnos = importedData.turnos || [];
+                        cajaMovs = importedData.caja || [];
                         saveData();
                         showToast('Datos cargados con éxito');
                         location.reload();
@@ -1988,13 +2091,44 @@ document.addEventListener('DOMContentLoaded', () => {
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.className = 'toast-notification';
+
         if (type === 'error') toast.style.background = '#ef4444';
         toast.textContent = message;
         document.body.appendChild(toast);
         setTimeout(() => {
             toast.style.opacity = '0';
-            setTimeout(() => toast.remove(), 500);
-        }, 3000);
+            setTimeout(() => toast.remove(), 400);
+        }, 2500);
+    }
+
+    const cajaForm = document.getElementById('caja-form');
+    if (cajaForm) {
+        cajaForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const date = document.getElementById('caja-mov-date') ? document.getElementById('caja-mov-date').value : '';
+            const type = document.getElementById('caja-mov-type') ? document.getElementById('caja-mov-type').value : 'entrada';
+            const concept = document.getElementById('caja-mov-concept') ? document.getElementById('caja-mov-concept').value.trim() : '';
+            const amount = document.getElementById('caja-mov-amount') ? parseFloat(document.getElementById('caja-mov-amount').value) : 0;
+
+            if (!date || !concept || !Number.isFinite(amount) || amount <= 0) {
+                showToast('Completa fecha, concepto y monto', 'error');
+                return;
+            }
+
+            const mov = { id: Date.now(), date: date, type: type, concept: concept, amount: amount };
+            cajaMovs.unshift(mov);
+            saveData();
+
+            if (document.getElementById('caja-mov-concept')) document.getElementById('caja-mov-concept').value = '';
+            if (document.getElementById('caja-mov-amount')) document.getElementById('caja-mov-amount').value = '';
+
+            const dayInput = document.getElementById('caja-date');
+            const monthInput = document.getElementById('caja-month');
+            if (dayInput) dayInput.value = date;
+            if (monthInput) monthInput.value = date.slice(0, 7);
+            renderCaja();
+            showToast('Movimiento guardado');
+        });
     }
 
     // --- CLIENT VIEW FUNCTIONS (SHARED STATUS VIEW) ---
@@ -2024,6 +2158,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inventoryView.style.display = 'none';
         saleView.style.display = 'none';
         reportsView.style.display = 'none';
+        if (cajaView) cajaView.style.display = 'none';
         clientsView.style.display = 'none';
         settingsView.style.display = 'none';
 
@@ -2346,6 +2481,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('menu-open-sale'),
         document.getElementById('menu-open-clients'),
         document.getElementById('menu-open-reports'),
+        document.getElementById('menu-open-caja'),
         document.getElementById('menu-open-settings')
     ];
     const menuCloseBtn = document.getElementById('menu-close');
