@@ -1720,6 +1720,42 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('report-total-revenue').textContent = `$${totalRev.toLocaleString()}`;
         document.getElementById('report-avg-sale').textContent = `$${avg.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 
+        const today = new Date().toISOString().split('T')[0];
+        const dayMovs = cajaMovs.filter(m => m && m.date && String(m.date).startsWith(today));
+        const inDay = dayMovs.filter(m => m.type === 'entrada').reduce((acc, m) => acc + Number(m.amount || 0), 0);
+        const outDay = dayMovs.filter(m => m.type === 'salida').reduce((acc, m) => acc + Number(m.amount || 0), 0);
+        const balDay = inDay - outDay;
+
+        const inEl = document.getElementById('report-caja-in');
+        const outEl = document.getElementById('report-caja-out');
+        const balEl = document.getElementById('report-caja-balance');
+        if (inEl) inEl.textContent = `$${inDay.toLocaleString()}`;
+        if (outEl) outEl.textContent = `$${outDay.toLocaleString()}`;
+        if (balEl) balEl.textContent = `$${balDay.toLocaleString()}`;
+
+        const cajaTable = document.getElementById('report-caja-table');
+        if (cajaTable) {
+            cajaTable.innerHTML = '';
+            const ordered = [...dayMovs].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+            if (ordered.length === 0) {
+                cajaTable.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay movimientos</td></tr>';
+            } else {
+                ordered.forEach(m => {
+                    const tr = document.createElement('tr');
+                    const typeLabel = m.type === 'entrada' ? 'Entrada' : 'Salida';
+                    const typeStyle = m.type === 'entrada' ? 'color: var(--success); font-weight: 600;' : 'color: var(--danger); font-weight: 600;';
+                    const amountTxt = `$${Number(m.amount || 0).toLocaleString()}`;
+                    tr.innerHTML = `
+                        <td>${m.date ? new Date(m.date).toLocaleDateString() : ''}</td>
+                        <td style="${typeStyle}">${typeLabel}</td>
+                        <td>${m.concept || ''}</td>
+                        <td>${amountTxt}</td>
+                    `;
+                    cajaTable.appendChild(tr);
+                });
+            }
+        }
+
         const table = document.getElementById('full-sales-history');
         table.innerHTML = '';
         sales.forEach(s => {
@@ -1981,6 +2017,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const today = new Date().toISOString().split('T')[0];
         const todaySales = sales.filter(s => s && s.date && s.date.startsWith(today));
 
+        const todayCaja = cajaMovs.filter(m => m && m.date && String(m.date).startsWith(today));
+        const cajaIn = todayCaja.filter(m => m.type === 'entrada').reduce((acc, m) => acc + (Number(m.amount) || 0), 0);
+        const cajaOut = todayCaja.filter(m => m.type === 'salida').reduce((acc, m) => acc + (Number(m.amount) || 0), 0);
+
         const total = todaySales.reduce((acc, s) => acc + (Number(s.total) || 0), 0);
         const count = todaySales.length;
 
@@ -1999,6 +2039,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const countEl = document.getElementById('daily-sales-count');
         if (countEl) countEl.textContent = count;
+
+        const cajaInEl = document.getElementById('daily-caja-in');
+        if (cajaInEl) cajaInEl.textContent = `$${cajaIn.toLocaleString()}`;
+
+        const cajaOutEl = document.getElementById('daily-caja-out');
+        if (cajaOutEl) cajaOutEl.textContent = `$${cajaOut.toLocaleString()}`;
 
         // Detailed methods
         const methodsContainer = document.getElementById('daily-methods-list');
@@ -2030,6 +2076,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const today = new Date().toISOString().split('T')[0];
         const todaySales = sales.filter(s => s && s.date && s.date.startsWith(today));
 
+        const todayCaja = cajaMovs.filter(m => m && m.date && String(m.date).startsWith(today));
+        const cajaIn = todayCaja.filter(m => m.type === 'entrada').reduce((acc, m) => acc + (Number(m.amount) || 0), 0);
+        const cajaOut = todayCaja.filter(m => m.type === 'salida').reduce((acc, m) => acc + (Number(m.amount) || 0), 0);
+
         const total = todaySales.reduce((acc, s) => acc + (Number(s.total) || 0), 0);
         const byMethod = todaySales.reduce((acc, s) => {
             const method = s.method || 'Efectivo';
@@ -2056,6 +2106,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h2 style="margin: 0; font-size: 18px;">${config.storeName}</h2>
                     <h3 style="margin: 5px 0; font-size: 14px;">CIERRE DE CAJA DIARIO</h3>
                     <p style="margin: 3px 0; font-size: 12px;">FECHA: ${dateStr}</p>
+                </div>
+
+                <div style="border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 10px;">
+                    <h4 style="margin: 0 0 10px 0; font-size: 12px; text-align: center;">CAJA (ENTRADAS / SALIDAS)</h4>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Entradas:</span>
+                        <span>$${cajaIn.toLocaleString()}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Salidas:</span>
+                        <span>$${cajaOut.toLocaleString()}</span>
+                    </div>
                 </div>
                 
                 <div style="border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 10px;">

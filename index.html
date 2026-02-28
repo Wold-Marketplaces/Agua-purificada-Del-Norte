@@ -956,6 +956,52 @@
 
                 <div class="card">
                     <div class="card-header">
+                        <h3>Caja (Día)</h3>
+                    </div>
+                    <div class="stats-grid" style="padding: 0 0 1.5rem;">
+                        <div class="stat-card">
+                            <div class="stat-icon revenue"><i class='bx bx-log-in'></i></div>
+                            <div class="stat-details">
+                                <h3>Entradas</h3>
+                                <h2 id="report-caja-in">$0</h2>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orders"><i class='bx bx-log-out'></i></div>
+                            <div class="stat-details">
+                                <h3>Salidas</h3>
+                                <h2 id="report-caja-out">$0</h2>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon customers"><i class='bx bx-calculator'></i></div>
+                            <div class="stat-details">
+                                <h3>Saldo</h3>
+                                <h2 id="report-caja-balance">$0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Concepto</th>
+                                    <th>Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-caja-table">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay movimientos</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
                         <h3>Historial de Ventas</h3>
                     </div>
                     <div class="table-container">
@@ -1504,6 +1550,20 @@
                     <h2 id="daily-total-sales" style="font-size: 2.5rem; color: var(--primary);">$0</h2>
                     <span id="daily-sales-count-label" style="font-size: 0.9rem; color: var(--text-muted);"><span
                             id="daily-sales-count">0</span> transacciones</span>
+                </div>
+
+                <div class="methods-breakdown">
+                    <h3 style="margin-bottom: 1rem; font-size: 1rem; font-weight: 600;">Caja (Día)</h3>
+                    <div style="display: grid; gap: 10px;">
+                        <div class="daily-method-item" style="display:flex; justify-content:space-between; align-items:center; padding: 10px; background: var(--bg-body); border: 1px solid var(--border-glass); border-radius: 10px;">
+                            <span>Entradas</span>
+                            <strong id="daily-caja-in">$0</strong>
+                        </div>
+                        <div class="daily-method-item" style="display:flex; justify-content:space-between; align-items:center; padding: 10px; background: var(--bg-body); border: 1px solid var(--border-glass); border-radius: 10px;">
+                            <span>Salidas</span>
+                            <strong id="daily-caja-out">$0</strong>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="methods-breakdown">

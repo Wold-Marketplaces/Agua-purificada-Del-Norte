@@ -677,6 +677,23 @@ tr:last-child td {
     padding-top: 1.5rem;
 }
 
+#daily-report-modal .modal-header {
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+#daily-report-modal .modal-header > div {
+    min-width: 0;
+}
+
+#daily-report-modal .modal-footer {
+    flex-wrap: wrap;
+}
+
+#daily-report-modal .modal-footer button {
+    flex: 1 1 180px;
+}
+
 /* Inventory Specific */
 .table-container {
     overflow-x: auto;
