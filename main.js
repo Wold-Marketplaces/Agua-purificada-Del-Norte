@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const monthInput = document.getElementById('caja-month');
         const movDate = document.getElementById('caja-mov-date');
 
-        const today = new Date().toISOString().split('T')[0];
+        const today = getTodayDateISO();
         const month = today.slice(0, 7);
 
         if (dayInput && !dayInput.value) dayInput.value = today;
@@ -218,8 +218,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderCaja() {
-        const day = (document.getElementById('caja-date') && document.getElementById('caja-date').value) ? document.getElementById('caja-date').value : new Date().toISOString().split('T')[0];
-        const month = (document.getElementById('caja-month') && document.getElementById('caja-month').value) ? document.getElementById('caja-month').value : new Date().toISOString().split('T')[0].slice(0, 7);
+        const day = (document.getElementById('caja-date') && document.getElementById('caja-date').value) ? document.getElementById('caja-date').value : getTodayDateISO();
+        const month = (document.getElementById('caja-month') && document.getElementById('caja-month').value) ? document.getElementById('caja-month').value : getTodayDateISO().slice(0, 7);
 
         const dayMovs = cajaMovs.filter(m => (m.date || '').startsWith(day));
         const monthMovs = cajaMovs.filter(m => (m.date || '').slice(0, 7) === month);
@@ -1652,7 +1652,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const badgeRepairs = document.getElementById('badge-repairs');
         if (badgeRepairs) badgeRepairs.textContent = pendingRepairs;
 
-        const today = new Date().toISOString().split('T')[0];
+        const today = getTodayDateISO();
         const todayTurnos = turnos.filter(t => t.date === today).length;
         const badgeTurnos = document.getElementById('badge-turnos');
         if (badgeTurnos) badgeTurnos.textContent = todayTurnos;
@@ -1720,11 +1720,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('report-total-revenue').textContent = `$${totalRev.toLocaleString()}`;
         document.getElementById('report-avg-sale').textContent = `$${avg.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 
-        const today = new Date().toISOString().split('T')[0];
+        const today = getTodayDateISO();
+        const todaySales = sales.filter(s => s && s.date && s.date.startsWith(today));
+        const todayTotalSales = todaySales.reduce((acc, s) => acc + (Number(s.total) || 0), 0);
+
         const dayMovs = cajaMovs.filter(m => m && m.date && String(m.date).startsWith(today));
         const inDay = dayMovs.filter(m => m.type === 'entrada').reduce((acc, m) => acc + Number(m.amount || 0), 0);
         const outDay = dayMovs.filter(m => m.type === 'salida').reduce((acc, m) => acc + Number(m.amount || 0), 0);
-        const balDay = inDay - outDay;
+
+        // Final balance for the day: Sales + Caja In - Caja Out
+        const balDay = todayTotalSales + inDay - outDay;
 
         const inEl = document.getElementById('report-caja-in');
         const outEl = document.getElementById('report-caja-out');
@@ -2014,7 +2019,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Daily Report Logic ---
     function openDailyReportModal() {
-        const today = new Date().toISOString().split('T')[0];
+        const today = getTodayDateISO();
         const todaySales = sales.filter(s => s && s.date && s.date.startsWith(today));
 
         const todayCaja = cajaMovs.filter(m => m && m.date && String(m.date).startsWith(today));
@@ -2023,6 +2028,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const total = todaySales.reduce((acc, s) => acc + (Number(s.total) || 0), 0);
         const count = todaySales.length;
+
+        // Balance calculation: Sales + Ingresos - Egresos
+        const finalBalance = total + cajaIn - cajaOut;
 
         const byMethod = todaySales.reduce((acc, s) => {
             const method = s.method || 'Efectivo';
@@ -2036,6 +2044,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const totalEl = document.getElementById('daily-total-sales');
         if (totalEl) totalEl.textContent = `$${total.toLocaleString()}`;
+
+        const balanceEl = document.getElementById('daily-final-balance');
+        if (balanceEl) balanceEl.textContent = `$${finalBalance.toLocaleString()}`;
 
         const countEl = document.getElementById('daily-sales-count');
         if (countEl) countEl.textContent = count;
@@ -2073,7 +2084,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function printDailyReport() {
-        const today = new Date().toISOString().split('T')[0];
+        const today = getTodayDateISO();
         const todaySales = sales.filter(s => s && s.date && s.date.startsWith(today));
 
         const todayCaja = cajaMovs.filter(m => m && m.date && String(m.date).startsWith(today));
@@ -2081,6 +2092,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const cajaOut = todayCaja.filter(m => m.type === 'salida').reduce((acc, m) => acc + (Number(m.amount) || 0), 0);
 
         const total = todaySales.reduce((acc, s) => acc + (Number(s.total) || 0), 0);
+        const finalBalance = total + cajaIn - cajaOut;
+
         const byMethod = todaySales.reduce((acc, s) => {
             const method = s.method || 'Efectivo';
             acc[method] = (acc[method] || 0) + (Number(s.total) || 0);
@@ -2109,25 +2122,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <div style="border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 10px;">
-                    <h4 style="margin: 0 0 10px 0; font-size: 12px; text-align: center;">CAJA (ENTRADAS / SALIDAS)</h4>
+                    <h4 style="margin: 0 0 10px 0; font-size: 12px; text-align: center;">VENTAS DEL DIA</h4>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span>Entradas:</span>
+                        <span>Ventas Totales:</span>
+                        <span>$${total.toLocaleString()}</span>
+                    </div>
+                </div>
+
+                <div style="border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 10px;">
+                    <h4 style="margin: 0 0 10px 0; font-size: 12px; text-align: center;">CAJA (INGRESOS / EGRESOS)</h4>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Ingresos:</span>
                         <span>$${cajaIn.toLocaleString()}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span>Salidas:</span>
+                        <span>Egresos:</span>
                         <span>$${cajaOut.toLocaleString()}</span>
                     </div>
                 </div>
                 
                 <div style="border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 10px;">
-                    <h4 style="margin: 0 0 10px 0; font-size: 12px; text-align: center;">RESUMEN POR METODO</h4>
+                    <h4 style="margin: 0 0 10px 0; font-size: 12px; text-align: center;">DETALLE DE VENTAS</h4>
                     ${methodsHtml}
                 </div>
 
                 <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-bottom: 15px; border-top: 1px solid #000; padding-top: 5px;">
-                    <span>TOTAL DEL DIA:</span>
-                    <span>$${total.toLocaleString()}</span>
+                    <span>SALDO FINAL:</span>
+                    <span>$${finalBalance.toLocaleString()}</span>
                 </div>
 
                 <div style="text-align: center; margin-top: 30px; border-top: 1px solid #000; padding-top: 10px; font-size: 10px;">
