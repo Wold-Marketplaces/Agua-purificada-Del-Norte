@@ -47,8 +47,8 @@
                 </li>
                 <li>
                     <a href="#">
-                        <i class='bx bx-calendar-check'></i>
-                        <span>Entregas Programadas</span>
+                        <i class='bx bx-fridge'></i>
+                        <span>Comodatos</span>
                     </a>
                 </li>
                 <li class="has-submenu" id="ventas-menu-item">
@@ -172,7 +172,7 @@
                         <button class="icon-btn" id="bell-repairs" title="Pedidos Pendientes"><i class='bx bxs-bell'
                                 style="color: var(--primary);"></i><span class="badge" id="badge-repairs"
                                 style="background: var(--primary);">0</span></button>
-                        <button class="icon-btn" id="bell-turnos" title="Entregas de Hoy"><i class='bx bxs-bell'
+                        <button class="icon-btn" id="bell-turnos" title="Comodatos"><i class='bx bxs-bell'
                                 style="color: var(--success);"></i><span class="badge" id="badge-turnos"
                                 style="background: var(--success);">0</span></button>
                         <button class="primary-btn" id="quick-sale-btn"><i class='bx bx-plus'></i> Venta Rápida</button>
@@ -318,31 +318,25 @@
                         <img src="logo de aguas.jpg"
                             style="height: 50px; width: auto; object-fit: contain; border-radius: 8px; filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.3));">
                         <div>
-                            <h1>Entregas Programadas</h1>
-                            <p>Agenda y seguimiento de entregas programadas.</p>
+                            <h1>Comodatos</h1>
+                            <p>Registro de equipos en comodato por cliente.</p>
                         </div>
                     </div>
                     <div class="header-actions">
-                        <button class="primary-btn" id="new-turno-btn"><i class='bx bx-plus'></i> Nueva Entrega</button>
+                        <button class="primary-btn" id="new-turno-btn"><i class='bx bx-plus'></i> Nuevo Comodato</button>
                     </div>
                 </header>
 
                 <div class="card" style="margin-bottom: 1.5rem;">
-                    <div class="card-header"
-                        style="display:flex; align-items:center; justify-content:space-between; gap: 1rem; flex-wrap:wrap;">
-                        <h3>Calendario</h3>
-                        <div style="display:flex; align-items:center; gap: 10px;">
-                            <label for="turnos-date" style="color: var(--text-muted); font-size: 0.9rem;">Día</label>
-                            <input type="date" id="turnos-date"
-                                style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main);">
-                        </div>
+                    <div class="card-header" style="display:flex; align-items:center; justify-content:space-between; gap: 1rem; flex-wrap:wrap;">
+                        <h3>Listado</h3>
                     </div>
                     <div id="turnos-day-summary" style="padding: 0 1.5rem 1.5rem; color: var(--text-muted);"></div>
                 </div>
 
                 <div class="card">
                     <div class="card-header">
-                        <h3>Entregas del Día</h3>
+                        <h3>Comodatos Registrados</h3>
                     </div>
                     <div id="turnos-list" class="repairs-list"></div>
                 </div>
@@ -357,7 +351,7 @@
                         <img src="logo de aguas.jpg"
                             style="height: 50px; width: auto; object-fit: contain; border-radius: 8px; filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.3));">
                         <div>
-                            <h1>Detalle de Pedido</h1>
+                            <h1>Detalle de Comodato</h1>
                         </div>
                     </div>
                     <button class="secondary-btn" onclick="switchTurnoView('Turnos')" style="margin-left: auto;">
@@ -367,29 +361,33 @@
 
                 <div class="card detail-card" style="max-width: 650px; margin: 2rem auto;">
                     <div class="detail-header">
-                        <h2 id="turno-detail-title">Turno</h2>
+                        <h2 id="turno-detail-title">Comodato</h2>
                         <span id="turno-detail-badge" class="badge">Estado</span>
                     </div>
                     <p id="turno-detail-client" class="text-muted">Cliente</p>
 
                     <div style="margin-top: 1rem; display:grid; gap: 10px;">
-                        <div style="display:flex; gap: 10px; flex-wrap:wrap;">
-                            <div style="flex:1; min-width: 200px;">
-                                <label style="color: var(--text-muted); font-size: 0.9rem;">Fecha</label>
-                                <input type="date" id="turno-detail-date"
-                                    style="width: 100%; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main);">
-                            </div>
-                            <div style="flex:1; min-width: 200px;">
-                                <label style="color: var(--text-muted); font-size: 0.9rem;">Hora</label>
-                                <input type="time" id="turno-detail-time"
-                                    style="width: 100%; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main);">
-                            </div>
+                        <div>
+                            <label style="color: var(--text-muted); font-size: 0.9rem;">Dirección</label>
+                            <input type="text" id="turno-detail-address"
+                                style="width: 100%; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main);">
                         </div>
 
                         <div>
-                            <label style="color: var(--text-muted); font-size: 0.9rem;">Trabajo / Servicio</label>
-                            <input type="text" id="turno-detail-service"
+                            <label style="color: var(--text-muted); font-size: 0.9rem;">Teléfono</label>
+                            <input type="tel" id="turno-detail-phone"
                                 style="width: 100%; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main);">
+                        </div>
+
+                        <div>
+                            <label style="color: var(--text-muted); font-size: 0.9rem;">Tipo de Comodato</label>
+                            <select id="turno-detail-itemtype"
+                                style="width: 100%; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main);">
+                                <option value="Freezer">Freezer</option>
+                                <option value="Bidones">Bidones</option>
+                                <option value="Heladeras">Heladeras</option>
+                                <option value="Dispenser Frío/Calor">Dispenser Frío/Calor</option>
+                            </select>
                         </div>
 
                         <div>
@@ -441,8 +439,8 @@
                         <img src="logo de aguas.jpg"
                             style="height: 50px; width: auto; object-fit: contain; border-radius: 8px; filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.3));">
                         <div>
-                            <h1>Nueva Entrega Programada</h1>
-                            <p>Registra una entrega programada.</p>
+                            <h1>Nuevo Comodato</h1>
+                            <p>Registra un comodato por cliente.</p>
                         </div>
                     </div>
                     <button class="secondary-btn" onclick="switchTurnoView('Turnos')" style="margin-left: auto;">
@@ -455,35 +453,33 @@
                         <div style="margin-bottom: 1.5rem;">
                             <h3><i class='bx bx-user'></i> Datos del Cliente</h3>
                             <div class="form-group" style="margin-bottom: 1rem;">
-                                <label>Nombre</label>
+                                <label>Cliente</label>
                                 <input type="text" id="turnoClientName" required
                                     style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main); width: 100%;">
                             </div>
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label>Dirección</label>
+                                <input type="text" id="turnoClientAddress" required
+                                    style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main); width: 100%;">
+                            </div>
                             <div class="form-group">
-                                <label>WhatsApp</label>
+                                <label>Teléfono</label>
                                 <input type="tel" id="turnoClientPhone" required
                                     style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main); width: 100%;">
                             </div>
                         </div>
 
                         <div style="margin-bottom: 1.5rem;">
-                            <h3><i class='bx bx-calendar'></i> Turno</h3>
-                            <div style="display:flex; gap: 10px; flex-wrap:wrap; margin-bottom: 1rem;">
-                                <div style="flex:1; min-width: 200px;" class="form-group">
-                                    <label>Fecha</label>
-                                    <input type="date" id="turnoDate" required
-                                        style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main); width: 100%;">
-                                </div>
-                                <div style="flex:1; min-width: 200px;" class="form-group">
-                                    <label>Hora</label>
-                                    <input type="time" id="turnoTime"
-                                        style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main); width: 100%;">
-                                </div>
-                            </div>
+                            <h3><i class='bx bx-box'></i> Comodato</h3>
                             <div class="form-group" style="margin-bottom: 1rem;">
-                                <label>Producto / Servicio</label>
-                                <input type="text" id="turnoService" required
+                                <label>Tipo de Comodato</label>
+                                <select id="turnoItemType" required
                                     style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main); width: 100%;">
+                                    <option value="Freezer">Freezer</option>
+                                    <option value="Bidones">Bidones</option>
+                                    <option value="Heladeras">Heladeras</option>
+                                    <option value="Dispenser Frío/Calor">Dispenser Frío/Calor</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Notas</label>
@@ -493,7 +489,7 @@
                         </div>
 
                         <button type="submit" class="primary-btn" style="width: 100%; padding: 12px; height: auto;">
-                            <i class='bx bx-check'></i> Registrar Entrega
+                            <i class='bx bx-check'></i> Registrar Comodato
                         </button>
                     </form>
                 </div>
@@ -993,7 +989,9 @@
                             </thead>
                             <tbody id="report-caja-table">
                                 <tr>
-                                    <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay movimientos</td>
+                                    <td colspan="4"
+                                        style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay
+                                        movimientos</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1063,7 +1061,8 @@
                 </header>
 
                 <div class="card" style="margin-bottom: 1.5rem;">
-                    <div class="card-header" style="display:flex; align-items:center; justify-content:space-between; gap: 1rem; flex-wrap:wrap;">
+                    <div class="card-header"
+                        style="display:flex; align-items:center; justify-content:space-between; gap: 1rem; flex-wrap:wrap;">
                         <h3>Balance</h3>
                         <div style="display:flex; align-items:center; gap: 10px; flex-wrap: wrap;">
                             <label for="caja-date" style="color: var(--text-muted); font-size: 0.9rem;">Día</label>
@@ -1129,7 +1128,8 @@
                         </div>
                         <div class="form-group">
                             <label>Concepto</label>
-                            <input type="text" id="caja-mov-concept" required placeholder="Ej: Pago de cuenta / Parche cubierta"
+                            <input type="text" id="caja-mov-concept" required
+                                placeholder="Ej: Pago de cuenta / Parche cubierta"
                                 style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main); width: 100%;">
                         </div>
                         <div class="form-group">
@@ -1160,7 +1160,9 @@
                             </thead>
                             <tbody id="caja-table">
                                 <tr>
-                                    <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay movimientos</td>
+                                    <td colspan="5"
+                                        style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay
+                                        movimientos</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1545,21 +1547,30 @@
             <div class="daily-stats-container" style="display: grid; gap: 1.5rem;">
                 <div class="main-stat-card"
                     style="background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary); padding: 1.5rem; border-radius: 12px; text-align: center;">
-                    <span style="color: var(--text-muted); display: block; margin-bottom: 5px;">Ventas Totales
-                        Hoy</span>
-                    <h2 id="daily-total-sales" style="font-size: 2.5rem; color: var(--primary);">$0</h2>
+                    <span style="color: var(--text-muted); display: block; margin-bottom: 5px;">Ventas de Hoy</span>
+                    <h2 id="daily-total-sales" style="color: var(--primary);">$0</h2>
                     <span id="daily-sales-count-label" style="font-size: 0.9rem; color: var(--text-muted);"><span
                             id="daily-sales-count">0</span> transacciones</span>
+                </div>
+
+                <div class="main-stat-card"
+                    style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); padding: 1.5rem; border-radius: 12px; text-align: center;">
+                    <span style="color: var(--text-muted); display: block; margin-bottom: 5px;">Saldo Final</span>
+                    <h2 id="daily-final-balance" style="color: var(--success);">$0</h2>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">(Ventas + Ingresos -
+                        Egresos)</p>
                 </div>
 
                 <div class="methods-breakdown">
                     <h3 style="margin-bottom: 1rem; font-size: 1rem; font-weight: 600;">Caja (Día)</h3>
                     <div style="display: grid; gap: 10px;">
-                        <div class="daily-method-item" style="display:flex; justify-content:space-between; align-items:center; padding: 10px; background: var(--bg-body); border: 1px solid var(--border-glass); border-radius: 10px;">
+                        <div class="daily-method-item"
+                            style="display:flex; justify-content:space-between; align-items:center; padding: 10px; background: var(--bg-body); border: 1px solid var(--border-glass); border-radius: 10px;">
                             <span>Entradas</span>
                             <strong id="daily-caja-in">$0</strong>
                         </div>
-                        <div class="daily-method-item" style="display:flex; justify-content:space-between; align-items:center; padding: 10px; background: var(--bg-body); border: 1px solid var(--border-glass); border-radius: 10px;">
+                        <div class="daily-method-item"
+                            style="display:flex; justify-content:space-between; align-items:center; padding: 10px; background: var(--bg-body); border: 1px solid var(--border-glass); border-radius: 10px;">
                             <span>Salidas</span>
                             <strong id="daily-caja-out">$0</strong>
                         </div>

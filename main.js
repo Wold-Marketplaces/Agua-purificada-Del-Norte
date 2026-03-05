@@ -25,10 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentRepairId = null;
     const GOMERIA_STORE_KEY = 'gomeria_repairs';
 
-    // --- TURNOS DATA (GOMERIA) ---
-    let turnos = JSON.parse(localStorage.getItem('gomeria_turnos')) || [];
+    // --- COMODATOS DATA ---
+    const COMODATOS_KEY = 'agua_comodatos';
+    // Migración: si no hay comodatos, intento cargar lo viejo (gomeria_turnos)
+    let turnos = JSON.parse(localStorage.getItem(COMODATOS_KEY)) || JSON.parse(localStorage.getItem('gomeria_turnos')) || [];
     let currentTurnoId = null;
-    const GOMERIA_TURNOS_KEY = 'gomeria_turnos';
 
     // --- PRODUCCIÓN DATA ---
     let produccion = JSON.parse(localStorage.getItem('agua_produccion')) || [];
@@ -59,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('repuestospos_employees', JSON.stringify(employees));
         localStorage.setItem('repuestospos_config', JSON.stringify(config));
         localStorage.setItem(GOMERIA_STORE_KEY, JSON.stringify(repairs));
-        localStorage.setItem(GOMERIA_TURNOS_KEY, JSON.stringify(turnos));
+        localStorage.setItem(COMODATOS_KEY, JSON.stringify(turnos));
         localStorage.setItem(AGUA_PRODUCCION_KEY, JSON.stringify(produccion));
         localStorage.setItem(CAJA_KEY, JSON.stringify(cajaMovs));
         updateStats();
@@ -131,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (viewName === 'Reparaciones' || viewName === 'Pedidos') {
             repairsView.style.display = 'block';
             renderRepairs();
-        } else if (viewName === 'Turnos' || viewName === 'Entregas Programadas') {
+        } else if (viewName === 'Comodatos') {
             if (turnosView) turnosView.style.display = 'block';
             initTurnosView();
         } else if (viewName === 'Producción') {
@@ -425,46 +426,41 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${parts[2]}/${parts[1]}/${parts[0]}`;
     }
 
-    // --- TURNOS FUNCTIONS ---
+    // --- COMODATOS FUNCTIONS ---
     function initTurnosView() {
-        const dateInput = document.getElementById('turnos-date');
-        if (dateInput && !dateInput.value) dateInput.value = getTodayDateISO();
         renderTurnos();
     }
 
     function renderTurnos() {
         const listEl = document.getElementById('turnos-list');
         const summaryEl = document.getElementById('turnos-day-summary');
-        const dateInput = document.getElementById('turnos-date');
-        if (!listEl || !dateInput) return;
+        if (!listEl) return;
 
-        const day = dateInput.value || getTodayDateISO();
-        const dayTurnos = turnos.filter(t => (t.date || '') === day);
+        const ordered = [...turnos].sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 
         if (summaryEl) {
-            const count = dayTurnos.length;
-            summaryEl.textContent = `${formatTurnoDateLabel(day)} - ${count} entrega${count === 1 ? '' : 's'}`;
+            const count = ordered.length;
+            summaryEl.textContent = `${count} comodato${count === 1 ? '' : 's'} registrado${count === 1 ? '' : 's'}`;
         }
 
         listEl.innerHTML = '';
 
-        if (dayTurnos.length === 0) {
-            listEl.innerHTML = '<p style="text-align:center; color: var(--text-muted); padding:2rem;">No hay entregas para este día.</p>';
+        if (ordered.length === 0) {
+            listEl.innerHTML = '<p style="text-align:center; color: var(--text-muted); padding:2rem;">No hay comodatos registrados.</p>';
             return;
         }
 
-        const ordered = [...dayTurnos].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
         ordered.forEach(t => {
             const div = document.createElement('div');
             div.className = 'repair-item';
             div.onclick = () => loadTurnoDetail(t.id);
-            const timeLabel = t.time ? ` - ${t.time}` : '';
+            const phoneLabel = t.clientPhone ? ` - ${t.clientPhone}` : '';
             div.innerHTML = `
                 <div class="repair-info">
-                    <h3>${t.service || 'ENTREGA'}</h3>
-                    <p>${t.clientName || ''}${timeLabel}</p>
+                    <h3>${t.itemType || 'COMODATO'}</h3>
+                    <p>${t.clientName || ''}${phoneLabel}</p>
                 </div>
-                <span class="status-badge ready">ENTREGADO</span>
+                <span class="status-badge ready">ACTIVO</span>
             `;
             listEl.appendChild(div);
         });
@@ -479,21 +475,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const badgeEl = document.getElementById('turno-detail-badge');
         const clientEl = document.getElementById('turno-detail-client');
 
-        if (titleEl) titleEl.textContent = t.service || 'Entrega';
+        if (titleEl) titleEl.textContent = t.itemType || 'Comodato';
         if (badgeEl) {
-            badgeEl.textContent = 'ENTREGADO';
+            badgeEl.textContent = 'ACTIVO';
             badgeEl.className = 'status-badge ready';
         }
         if (clientEl) clientEl.textContent = `${t.clientName || ''} ${t.clientPhone ? '- ' + t.clientPhone : ''}`;
 
-        const dateEl = document.getElementById('turno-detail-date');
-        const timeEl = document.getElementById('turno-detail-time');
-        const serviceEl = document.getElementById('turno-detail-service');
+        const addressEl = document.getElementById('turno-detail-address');
+        const phoneEl = document.getElementById('turno-detail-phone');
+        const itemTypeEl = document.getElementById('turno-detail-itemtype');
         const notesEl = document.getElementById('turno-detail-notes');
 
-        if (dateEl) dateEl.value = t.date || '';
-        if (timeEl) timeEl.value = t.time || '';
-        if (serviceEl) serviceEl.value = t.service || '';
+        if (addressEl) addressEl.value = t.clientAddress || '';
+        if (phoneEl) phoneEl.value = t.clientPhone || '';
+        if (itemTypeEl) itemTypeEl.value = t.itemType || 'Freezer';
         if (notesEl) notesEl.value = t.notes || '';
 
         updateTurnoShareLink(t);
@@ -505,23 +501,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const idx = turnos.findIndex(t => t.id === currentTurnoId);
         if (idx === -1) return;
 
-        const dateEl = document.getElementById('turno-detail-date');
-        const timeEl = document.getElementById('turno-detail-time');
-        const serviceEl = document.getElementById('turno-detail-service');
+        const addressEl = document.getElementById('turno-detail-address');
+        const phoneEl = document.getElementById('turno-detail-phone');
+        const itemTypeEl = document.getElementById('turno-detail-itemtype');
         const notesEl = document.getElementById('turno-detail-notes');
 
-        turnos[idx].date = dateEl ? dateEl.value : turnos[idx].date;
-        turnos[idx].time = timeEl ? timeEl.value : turnos[idx].time;
-        turnos[idx].service = serviceEl ? serviceEl.value.trim() : turnos[idx].service;
+        turnos[idx].clientAddress = addressEl ? addressEl.value.trim() : turnos[idx].clientAddress;
+        turnos[idx].clientPhone = phoneEl ? phoneEl.value.trim() : turnos[idx].clientPhone;
+        turnos[idx].itemType = itemTypeEl ? itemTypeEl.value : turnos[idx].itemType;
         turnos[idx].notes = notesEl ? notesEl.value.trim() : turnos[idx].notes;
 
         saveData();
         updateTurnoShareLink(turnos[idx]);
-        showToast('Entrega actualizada');
+        showToast('Comodato actualizado');
     }
 
     function updateTurnoShareLink(turno) {
-        const link = window.location.href.split('#')[0] + '#t=' + safeEncode({ ...turno, kind: 'turno' });
+        const link = window.location.href.split('#')[0] + '#c=' + safeEncode({ ...turno, kind: 'comodato' });
         const input = document.getElementById('turno-share-link');
         if (input) input.value = link;
     }
@@ -556,9 +552,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 phone = '549' + phone.substring(1);
             }
 
-            const fecha = t.date ? formatTurnoDateLabel(t.date) : '';
-            const hora = t.time ? ` ${t.time}` : '';
-            const msg = `Hola ${t.clientName || ''}, tu entrega de ${t.service || 'productos'} fue realizada el ${fecha}${hora}. Detalle: ${link}`;
+            const tipo = t.itemType || 'Comodato';
+            const direccion = t.clientAddress ? `Dirección: ${t.clientAddress}. ` : '';
+            const msg = `Hola ${t.clientName || ''}, registramos tu comodato (${tipo}). ${direccion}Detalle: ${link}`;
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
         } else {
             showToast('Número de teléfono no disponible', 'error');
@@ -587,11 +583,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillText('AGUA PURIFICADA DEL NORTE', 500, 130);
 
         ctx.font = 'bold 35px Arial';
-        ctx.fillText('COMPROBANTE DE ENTREGA', 500, 210);
+        ctx.fillText('COMPROBANTE DE COMODATO', 500, 210);
 
         ctx.fillStyle = 'white';
         ctx.font = '30px Arial';
-        ctx.fillText(`ENTREGA #${(t.id || '').slice(-6)}`, 500, 255);
+        ctx.fillText(`COMODATO #${(t.id || '').slice(-6)}`, 500, 255);
 
         ctx.strokeStyle = '#334155';
         ctx.lineWidth = 2;
@@ -599,7 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ctx.fillStyle = 'white';
         ctx.font = 'bold 70px Arial';
-        ctx.fillText((t.service || 'ENTREGA').toUpperCase(), 500, 410);
+        ctx.fillText((t.itemType || 'COMODATO').toUpperCase(), 500, 410);
 
         ctx.fillStyle = '#94a3b8';
         ctx.font = '38px Arial';
@@ -610,27 +606,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ctx.fillStyle = '#4ade80';
         ctx.font = 'bold 65px Arial';
-        ctx.fillText('ENTREGADO', 500, 650);
+        ctx.fillText('ACTIVO', 500, 650);
 
-        const fecha = t.date ? formatTurnoDateLabel(t.date) : '-';
-        const hora = t.time ? t.time : '-';
+        const direccion = t.clientAddress ? t.clientAddress : '-';
         ctx.fillStyle = 'white';
-        ctx.font = 'bold 45px Arial';
-        ctx.fillText(`${fecha}  ${hora}`, 500, 835);
+        ctx.font = 'bold 36px Arial';
+        ctx.fillText(`DIRECCIÓN: ${direccion}`, 500, 835);
 
         ctx.fillStyle = '#475569';
         ctx.font = '25px Arial';
-        ctx.fillText('Agua purificada Del Norte - Control de Entregas', 500, 920);
+        ctx.fillText('Agua purificada Del Norte - Comodatos', 500, 920);
 
         const dlink = document.createElement('a');
-        dlink.download = `ENTREGA_${(t.id || '').slice(-6)}.png`;
+        dlink.download = `COMODATO_${(t.id || '').slice(-6)}.png`;
         dlink.href = canvas.toDataURL('image/png');
         dlink.click();
     }
 
     function deleteTurnoRecord() {
         if (!currentTurnoId) return;
-        if (confirm('¿Eliminar esta entrega?')) {
+        if (confirm('¿Eliminar este comodato?')) {
             turnos = turnos.filter(i => i.id !== currentTurnoId);
             saveData();
             switchTurnoView('Turnos');
@@ -797,33 +792,30 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
 
             const name = document.getElementById('turnoClientName').value.trim();
+            const address = document.getElementById('turnoClientAddress') ? document.getElementById('turnoClientAddress').value.trim() : '';
             const phone = document.getElementById('turnoClientPhone').value.trim();
-            const date = document.getElementById('turnoDate').value;
-            const time = document.getElementById('turnoTime').value;
-            const service = document.getElementById('turnoService').value.trim();
+            const itemType = document.getElementById('turnoItemType') ? document.getElementById('turnoItemType').value : '';
             const notes = document.getElementById('turnoNotes').value.trim();
 
-            if (!name || !service || !date) {
-                showToast('Completa nombre, servicio y fecha', 'error');
+            if (!name || !address || !phone || !itemType) {
+                showToast('Completa cliente, dirección, teléfono y tipo de comodato', 'error');
                 return;
             }
 
             const newTurno = {
                 id: Date.now().toString(),
                 clientName: name,
+                clientAddress: address,
                 clientPhone: phone,
-                date,
-                time: time || '',
-                service,
-                notes: notes || ''
+                itemType,
+                notes: notes || '',
+                createdAt: new Date().toISOString()
             };
 
             turnos.unshift(newTurno);
             saveData();
 
             newTurnoForm.reset();
-            const d = document.getElementById('turnos-date');
-            if (d) d.value = date;
             switchTurnoView('Turnos');
         });
     }
@@ -875,7 +867,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bRepairs = document.getElementById('bell-repairs');
     if (bRepairs) bRepairs.onclick = () => switchView('Reparaciones');
     const bTurnos = document.getElementById('bell-turnos');
-    if (bTurnos) bTurnos.onclick = () => switchView('Turnos');
+    if (bTurnos) bTurnos.onclick = () => switchView('Comodatos');
 
     // --- Inventory CRUD ---
     function renderInventory(filterText = '', filterCat = 'all') {
@@ -1653,9 +1645,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (badgeRepairs) badgeRepairs.textContent = pendingRepairs;
 
         const today = getTodayDateISO();
-        const todayTurnos = turnos.filter(t => t.date === today).length;
+        const totalComodatos = turnos.length;
         const badgeTurnos = document.getElementById('badge-turnos');
-        if (badgeTurnos) badgeTurnos.textContent = todayTurnos;
+        if (badgeTurnos) badgeTurnos.textContent = totalComodatos;
 
         const todaySales = sales.filter(s => s && s.date && s.date.startsWith(today));
         const totalSalesVal = todaySales.reduce((acc, s) => acc + (s.total || 0), 0);
@@ -1918,7 +1910,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sales: sales,
             clients: clients,
             repairs: repairs,
-            turnos: turnos,
+            comodatos: turnos,
             employees: employees,
             caja: cajaMovs,
             exportDate: new Date().toISOString()
@@ -1950,9 +1942,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const repairsSheet = XLSX.utils.json_to_sheet(repairs);
         XLSX.utils.book_append_sheet(workbook, repairsSheet, "Reparaciones");
 
-        // Sheet 6: Turnos
-        const turnosSheet = XLSX.utils.json_to_sheet(turnos);
-        XLSX.utils.book_append_sheet(workbook, turnosSheet, "Turnos");
+        // Sheet 6: Comodatos
+        const comodatosSheet = XLSX.utils.json_to_sheet(turnos);
+        XLSX.utils.book_append_sheet(workbook, comodatosSheet, "Comodatos");
 
         const cajaSheet = XLSX.utils.json_to_sheet(cajaMovs);
         XLSX.utils.book_append_sheet(workbook, cajaSheet, "Caja");
@@ -1983,7 +1975,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         clients: XLSX.utils.sheet_to_json(workbook.Sheets["Clientes"]),
                         employees: workbook.Sheets["Empleados"] ? XLSX.utils.sheet_to_json(workbook.Sheets["Empleados"]) : [],
                         repairs: workbook.Sheets["Reparaciones"] ? XLSX.utils.sheet_to_json(workbook.Sheets["Reparaciones"]) : [],
-                        turnos: workbook.Sheets["Turnos"] ? XLSX.utils.sheet_to_json(workbook.Sheets["Turnos"]) : [],
+                        comodatos: workbook.Sheets["Comodatos"] ? XLSX.utils.sheet_to_json(workbook.Sheets["Comodatos"]) : (workbook.Sheets["Turnos"] ? XLSX.utils.sheet_to_json(workbook.Sheets["Turnos"]) : []),
                         caja: workbook.Sheets["Caja"] ? XLSX.utils.sheet_to_json(workbook.Sheets["Caja"]) : []
                     };
                 } else {
@@ -1997,7 +1989,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         clients = importedData.clients;
                         employees = importedData.employees || [];
                         repairs = importedData.repairs || [];
-                        turnos = importedData.turnos || [];
+                        turnos = importedData.comodatos || importedData.turnos || [];
                         cajaMovs = importedData.caja || [];
                         saveData();
                         showToast('Datos cargados con éxito');
@@ -2245,24 +2237,22 @@ document.addEventListener('DOMContentLoaded', () => {
         clientsView.style.display = 'none';
         settingsView.style.display = 'none';
 
-        const isTurno = data && (data.kind === 'turno' || data.service !== undefined);
+        const isComodato = data && (data.kind === 'comodato' || data.itemType !== undefined || data.clientAddress !== undefined);
 
-        if (isTurno) {
-            document.getElementById('client-order-id').textContent = `TURNO #${(data.id || "").slice(-6)}`;
-            document.getElementById('client-device-model').textContent = data.service || "TURNO";
+        if (isComodato) {
+            document.getElementById('client-order-id').textContent = `COMODATO #${(data.id || "").slice(-6)}`;
+            document.getElementById('client-device-model').textContent = data.itemType || "COMODATO";
             document.getElementById('client-name-display').textContent = `CLIENTE: ${data.clientName || ""}`;
-            document.getElementById('client-cost').textContent = data.date ? `${formatTurnoDateLabel(data.date)}${data.time ? ' ' + data.time : ''}` : "";
+            document.getElementById('client-cost').textContent = data.clientPhone ? `TEL: ${data.clientPhone}` : '';
 
             const container = document.getElementById('client-progress');
             if (container) {
-                const fecha = data.date ? formatTurnoDateLabel(data.date) : '-';
-                const hora = data.time ? data.time : '-';
+                const direccion = data.clientAddress ? data.clientAddress : '-';
                 const notas = data.notes ? data.notes : '-';
 
                 container.innerHTML = '';
                 const items = [
-                    { l: `FECHA: ${fecha}` },
-                    { l: `HORA: ${hora}` },
+                    { l: `DIRECCIÓN: ${direccion}` },
                     { l: `NOTAS: ${notas}` }
                 ];
                 items.forEach((it) => {
