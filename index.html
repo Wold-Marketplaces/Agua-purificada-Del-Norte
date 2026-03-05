@@ -379,6 +379,19 @@
                                 style="width: 100%; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main);">
                         </div>
 
+                        <div style="display:flex; gap: 10px; flex-wrap:wrap;">
+                            <div style="flex:1; min-width: 200px;">
+                                <label style="color: var(--text-muted); font-size: 0.9rem;">Fecha de Alta / Entrega</label>
+                                <input type="date" id="turno-detail-startdate"
+                                    style="width: 100%; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main);">
+                            </div>
+                            <div style="flex:1; min-width: 200px;">
+                                <label style="color: var(--text-muted); font-size: 0.9rem;">Fecha de Retiro / Devolución</label>
+                                <input type="date" id="turno-detail-enddate"
+                                    style="width: 100%; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main);">
+                            </div>
+                        </div>
+
                         <div>
                             <label style="color: var(--text-muted); font-size: 0.9rem;">Tipo de Comodato</label>
                             <select id="turno-detail-itemtype"
@@ -471,6 +484,18 @@
 
                         <div style="margin-bottom: 1.5rem;">
                             <h3><i class='bx bx-box'></i> Comodato</h3>
+                            <div style="display:flex; gap: 10px; flex-wrap:wrap; margin-bottom: 1rem;">
+                                <div style="flex:1; min-width: 200px;" class="form-group">
+                                    <label>Fecha de Alta / Entrega</label>
+                                    <input type="date" id="turnoStartDate" required
+                                        style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main); width: 100%;">
+                                </div>
+                                <div style="flex:1; min-width: 200px;" class="form-group">
+                                    <label>Fecha de Retiro / Devolución</label>
+                                    <input type="date" id="turnoEndDate"
+                                        style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-main); width: 100%;">
+                                </div>
+                            </div>
                             <div class="form-group" style="margin-bottom: 1rem;">
                                 <label>Tipo de Comodato</label>
                                 <select id="turnoItemType" required

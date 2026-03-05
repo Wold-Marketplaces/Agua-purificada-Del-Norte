@@ -455,10 +455,11 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = 'repair-item';
             div.onclick = () => loadTurnoDetail(t.id);
             const phoneLabel = t.clientPhone ? ` - ${t.clientPhone}` : '';
+            const startLabel = t.startDate ? ` - ${formatTurnoDateLabel(t.startDate)}` : '';
             div.innerHTML = `
                 <div class="repair-info">
                     <h3>${t.itemType || 'COMODATO'}</h3>
-                    <p>${t.clientName || ''}${phoneLabel}</p>
+                    <p>${t.clientName || ''}${phoneLabel}${startLabel}</p>
                 </div>
                 <span class="status-badge ready">ACTIVO</span>
             `;
@@ -484,11 +485,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const addressEl = document.getElementById('turno-detail-address');
         const phoneEl = document.getElementById('turno-detail-phone');
+        const startDateEl = document.getElementById('turno-detail-startdate');
+        const endDateEl = document.getElementById('turno-detail-enddate');
         const itemTypeEl = document.getElementById('turno-detail-itemtype');
         const notesEl = document.getElementById('turno-detail-notes');
 
         if (addressEl) addressEl.value = t.clientAddress || '';
         if (phoneEl) phoneEl.value = t.clientPhone || '';
+        if (startDateEl) startDateEl.value = t.startDate || '';
+        if (endDateEl) endDateEl.value = t.endDate || '';
         if (itemTypeEl) itemTypeEl.value = t.itemType || 'Freezer';
         if (notesEl) notesEl.value = t.notes || '';
 
@@ -503,13 +508,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const addressEl = document.getElementById('turno-detail-address');
         const phoneEl = document.getElementById('turno-detail-phone');
+        const startDateEl = document.getElementById('turno-detail-startdate');
+        const endDateEl = document.getElementById('turno-detail-enddate');
         const itemTypeEl = document.getElementById('turno-detail-itemtype');
         const notesEl = document.getElementById('turno-detail-notes');
 
         turnos[idx].clientAddress = addressEl ? addressEl.value.trim() : turnos[idx].clientAddress;
         turnos[idx].clientPhone = phoneEl ? phoneEl.value.trim() : turnos[idx].clientPhone;
+        turnos[idx].startDate = startDateEl ? startDateEl.value : turnos[idx].startDate;
+        turnos[idx].endDate = endDateEl ? endDateEl.value : turnos[idx].endDate;
         turnos[idx].itemType = itemTypeEl ? itemTypeEl.value : turnos[idx].itemType;
         turnos[idx].notes = notesEl ? notesEl.value.trim() : turnos[idx].notes;
+
+        if (!turnos[idx].startDate) {
+            showToast('Completa la fecha de alta / entrega', 'error');
+            return;
+        }
 
         saveData();
         updateTurnoShareLink(turnos[idx]);
@@ -554,7 +568,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const tipo = t.itemType || 'Comodato';
             const direccion = t.clientAddress ? `Dirección: ${t.clientAddress}. ` : '';
-            const msg = `Hola ${t.clientName || ''}, registramos tu comodato (${tipo}). ${direccion}Detalle: ${link}`;
+            const alta = t.startDate ? `Alta: ${formatTurnoDateLabel(t.startDate)}. ` : '';
+            const retiro = t.endDate ? `Retiro: ${formatTurnoDateLabel(t.endDate)}. ` : '';
+            const msg = `Hola ${t.clientName || ''}, registramos tu comodato (${tipo}). ${direccion}${alta}${retiro}Detalle: ${link}`;
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
         } else {
             showToast('Número de teléfono no disponible', 'error');
@@ -795,10 +811,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const address = document.getElementById('turnoClientAddress') ? document.getElementById('turnoClientAddress').value.trim() : '';
             const phone = document.getElementById('turnoClientPhone').value.trim();
             const itemType = document.getElementById('turnoItemType') ? document.getElementById('turnoItemType').value : '';
+            const startDate = document.getElementById('turnoStartDate') ? document.getElementById('turnoStartDate').value : '';
+            const endDate = document.getElementById('turnoEndDate') ? document.getElementById('turnoEndDate').value : '';
             const notes = document.getElementById('turnoNotes').value.trim();
 
-            if (!name || !address || !phone || !itemType) {
-                showToast('Completa cliente, dirección, teléfono y tipo de comodato', 'error');
+            if (!name || !address || !phone || !itemType || !startDate) {
+                showToast('Completa cliente, dirección, teléfono, tipo de comodato y fecha de alta', 'error');
                 return;
             }
 
@@ -808,6 +826,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 clientAddress: address,
                 clientPhone: phone,
                 itemType,
+                startDate,
+                endDate: endDate || '',
                 notes: notes || '',
                 createdAt: new Date().toISOString()
             };
@@ -2249,10 +2269,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (container) {
                 const direccion = data.clientAddress ? data.clientAddress : '-';
                 const notas = data.notes ? data.notes : '-';
+                const alta = data.startDate ? formatTurnoDateLabel(data.startDate) : '-';
+                const retiro = data.endDate ? formatTurnoDateLabel(data.endDate) : '-';
 
                 container.innerHTML = '';
                 const items = [
                     { l: `DIRECCIÓN: ${direccion}` },
+                    { l: `ALTA: ${alta}` },
+                    { l: `RETIRO: ${retiro}` },
                     { l: `NOTAS: ${notas}` }
                 ];
                 items.forEach((it) => {
