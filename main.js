@@ -853,6 +853,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const topLevelLinks = document.querySelectorAll('.nav-links > li:not(.has-submenu)');
     topLevelLinks.forEach(li => {
         li.addEventListener('click', (e) => {
+            const anchor = li.querySelector('a');
+            if (anchor && anchor.getAttribute('target') === '_blank') {
+                return; // Let the browser handle standard links opening in new tabs
+            }
             e.preventDefault();
             const viewName = li.querySelector('span').textContent;
             switchView(viewName);
