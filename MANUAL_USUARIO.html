@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario - Agua purificada Del Norte</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #f8fafc;
+            color: #222;
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .manual-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #0001;
+            padding: 2rem;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2563eb;
+        }
+
+        nav {
+            margin-bottom: 2rem;
+        }
+
+        nav a {
+            margin-right: 1rem;
+            color: #06b6d4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .tip {
+            background: #e0f2fe;
+            border-left: 4px solid #06b6d4;
+            padding: 0.7em 1em;
+            margin: 1em 0;
+            border-radius: 6px;
+        }
+
+        ul {
+            margin-left: 1.2em;
+        }
+
+        @media (max-width: 600px) {
+            .manual-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="manual-container">
+        <h1>Manual de Usuario</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <p style="margin: 0;"><strong>Agua purificada Del Norte</strong> &mdash; 8 de marzo de 2026</p>
+            <button id="read-btn"
+                style="background: #2563eb; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 500; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(37,99,235,0.2);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                </svg>
+                <span id="read-text">Escuchar Manual</span>
+            </button>
+        </div>
+        <br>
+        <nav>
+            <a href="#bienvenida">Bienvenida</a>
+            <a href="#conceptos">Conceptos básicos</a>
+            <a href="#panel">Pantalla principal</a>
+            <a href="#ventas">Registrar una venta</a>
+            <a href="#entregas">Entregas programadas</a>
+            <a href="#stock">Controlar el stock</a>
+            <a href="#historial">Historial de ventas</a>
+            <a href="#clientes">Clientes</a>
+            <a href="#empleados">Empleados</a>
+            <a href="#whatsapp">Enviar por WhatsApp</a>
+            <a href="#consejos">Consejos útiles</a>
+            <a href="#faq">Preguntas frecuentes</a>
+        </nav>
+
+        <h2 id="bienvenida">Bienvenida</h2>
+        <p>Este manual te ayudará a usar el sistema para registrar ventas, entregas y controlar el stock de agua, hielo
+            y accesorios. Es práctico y fácil de seguir.</p>
+
+        <h2 id="conceptos">Conceptos básicos</h2>
+        <ul>
+            <li><b>Productos:</b> Agua (bidones), Hielo (bolsas), Accesorios (dispensers).</li>
+            <li><b>Clientes:</b> Casa particular, Negocio, Ambos.</li>
+            <li><b>Tipos de venta:</b> Normal, fuera de stock, accesorios, servicio de entrega.</li>
+        </ul>
+
+        <h2 id="panel">Pantalla principal (Panel)</h2>
+        <ul>
+            <li>Ventas del día</li>
+            <li>Pedidos y entregas pendientes</li>
+            <li>Avisos de stock bajo</li>
+            <li>Acceso rápido a funciones</li>
+        </ul>
+
+        <h2 id="ventas">¿Cómo registrar una venta?</h2>
+        <ol>
+            <li>Haz clic en <b>Ventas</b> en el menú.</li>
+            <li>Busca el producto y agrégalo al carrito.</li>
+            <li>Elige o crea el cliente.</li>
+            <li>Selecciona el método de pago.</li>
+            <li>Haz clic en <b>Finalizar venta</b>.</li>
+            <li>Imprime el ticket o compártelo por WhatsApp.</li>
+        </ol>
+        <div class="tip">Practica: Ve al menú <b>Ventas</b> y simula una venta de un bidón de agua.</div>
+
+        <h2 id="entregas">¿Cómo registrar una entrega programada?</h2>
+        <ol>
+            <li>Ve a <b>Entregas Programadas</b>.</li>
+            <li>Haz clic en <b>Nueva Entrega</b>.</li>
+            <li>Completa los datos y guarda.</li>
+        </ol>
+        <div class="tip">Practica: Programa una entrega para mañana a un cliente de prueba.</div>
+
+        <h2 id="stock">¿Cómo controlar el stock?</h2>
+        <ol>
+            <li>Ve a <b>Productos</b>.</li>
+            <li>Revisa la lista y el stock disponible.</li>
+            <li>Agrega, edita o elimina productos según necesites.</li>
+        </ol>
+        <div class="tip">Practica: Agrega un producto nuevo y luego elimínalo.</div>
+
+        <h2 id="historial">¿Cómo ver el historial de ventas?</h2>
+        <ol>
+            <li>Ve a <b>Reportes</b>.</li>
+            <li>Filtra por fecha, cliente o empleado.</li>
+            <li>Exporta los datos si lo necesitas.</li>
+        </ol>
+        <div class="tip">Practica: Busca las ventas de la última semana.</div>
+
+        <h2 id="clientes">¿Cómo agregar o editar clientes?</h2>
+        <ol>
+            <li>Ve a <b>Clientes</b>.</li>
+            <li>Haz clic en <b>Añadir Nuevo Cliente</b> o en editar.</li>
+            <li>Completa los datos y guarda.</li>
+        </ol>
+        <div class="tip">Practica: Crea un cliente ficticio y luego edítalo.</div>
+
+        <h2 id="empleados">¿Cómo agregar o editar empleados?</h2>
+        <ol>
+            <li>Ve a <b>Empleados</b>.</li>
+            <li>Haz clic en <b>Añadir Nuevo Empleado</b> o en editar.</li>
+            <li>Completa los datos y guarda.</li>
+        </ol>
+        <div class="tip">Practica: Agrega un empleado de prueba.</div>
+
+        <h2 id="whatsapp">¿Cómo enviar comprobantes por WhatsApp?</h2>
+        <ul>
+            <li>Después de una venta o entrega, haz clic en el botón de WhatsApp.</li>
+            <li>Se abrirá WhatsApp Web con el mensaje listo para enviar.</li>
+        </ul>
+        <div class="tip">Practica: Haz una venta y prueba enviar el comprobante a tu propio número.</div>
+
+        <h2 id="consejos">Consejos útiles</h2>
+        <ul>
+            <li>No te preocupes si te equivocas: puedes editar o eliminar ventas, clientes y productos.</li>
+            <li>El sistema es offline: no necesitas internet para usarlo, solo para WhatsApp.</li>
+            <li>Haz backups periódicos: exporta los datos regularmente.</li>
+        </ul>
+
+        <h2 id="faq">Preguntas frecuentes</h2>
+        <b>¿Qué hago si me quedo sin stock?</b>
+        <div>El sistema te avisa. Puedes registrar la venta igual y reponer después.</div>
+        <b>¿Puedo usarlo en el celular?</b>
+        <div>Sí, el diseño es adaptable a PC, tablet y smartphone.</div>
+        <b>¿Se pueden recuperar los datos si borro algo por error?</b>
+        <div>Sí, si tienes un backup. Haz backups seguido.</div>
+
+        <hr>
+        <p style="text-align:center; color:#94a3b8;">Manual creado para Agua purificada Del Norte. &copy; 2026</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('read-btn');
+            const textSpan = document.getElementById('read-text');
+            let isPlaying = false;
+            let utterance = null;
+
+            // The text to be read aloud (compiled from the manual)
+            const manualText = `Manual de Usuario. Bienvenido al sistema de gestión de Agua purificada Del Norte. Este manual te ayudará a entender cómo usar el programa para registrar ventas, entregas y controlar el stock de agua, hielo y accesorios. Está pensado para que cualquier persona, aunque no tenga experiencia técnica, pueda trabajar tranquila y sin confundirse. Primero, ¿qué puedes hacer con este sistema? Puedes registrar ventas de agua, hielo y accesorios. Llevar el control de entregas a domicilio o a negocios. Gestionar el stock, para saber exactamente cuántos productos quedan. Ver y buscar el historial de ventas. Administrar clientes y empleados. Y generar comprobantes para enviar información por WhatsApp. Algunos conceptos básicos que debes conocer: En los tipos de productos manejamos Agua, como bidones de doce y veinte litros. Hielo, en bolsas de dos, cinco, diez kilos y bolsón. Y Accesorios, como dispensers. En los tipos de clientes tenemos Casa particular, que generalmente compra agua; Negocio, que generalmente compra hielo; y Ambos, que pueden comprar de todo. En cuanto a los tipos de ventas: La Venta normal es cuando se vende lo que hay en stock. La Venta fuera de stock se utiliza para registrar un pedido especial si no hay disponibilidad. También tenemos Venta de accesorios y Servicio de entrega, donde se cobra el envío si corresponde. Conozcamos la Pantalla principal o Panel. Aquí verás las ventas del día, los pedidos y entregas pendientes, los avisos de stock bajo, y tendrás acceso rápido a las funciones principales. ¿Cómo registrar una venta? Haz clic en Ventas en el menú lateral. Busca el producto, como agua o hielo, y haz clic para agregarlo al carrito. Elige el cliente, o crea uno nuevo si no existe. Selecciona el método de pago, ya sea efectivo, tarjeta, transferencia o a cuenta. Haz clic en Finalizar venta. Finalmente, puedes imprimir el ticket, compartirlo por WhatsApp o simplemente cerrar. ¡Listo! El stock se descontará automáticamente. ¿Cómo controlar el stock? Ve a la sección Productos. Allí verás la lista de artículos, su precio y el stock disponible. Desde ese lugar puedes agregar, editar o eliminar productos. Un dato importante: Si el stock es bajo, el sistema te avisará con una alarma visual. ¿Cómo agregar o editar clientes y empleados? El proceso es muy similar. Ve a la sección Clientes o Empleados desde el menú. Haz clic en el botón Añadir Nuevo o presiona el botón de editar correspondiente. Completa los datos necesarios en el formulario y dale a guardar. ¿Cómo enviar comprobantes por WhatsApp? Muy sencillo. Después de una venta o entrega, haz clic en el botón de WhatsApp. El sistema abrirá WhatsApp Web con un mensaje ya escrito y listo para enviar al cliente. Para terminar, algunos consejos útiles: No te preocupes si te equivocas al principio, ya que siempre puedes editar o eliminar ventas, clientes y productos. El sistema es completamente offline: no necesitas internet para usarlo, solo para WhatsApp. Haz copias de seguridad de forma periódica usando la opción exportar datos. Si tienes dudas durante el día, consulta este manual escrito o pide ayuda a tu supervisor. ¡Muchos éxitos en tu día de trabajo en Agua purificada Del Norte!`;
+
+            // Stop speaking if the user navigates away or closes the page
+            window.addEventListener('beforeunload', () => {
+                window.speechSynthesis.cancel();
+            });
+
+            btn.addEventListener('click', () => {
+                if (!isPlaying) {
+                    // Start playing
+                    window.speechSynthesis.cancel(); // Clear any ongoing speech
+                    utterance = new SpeechSynthesisUtterance(manualText);
+
+                    // Try to find a Spanish female voice or default Spanish voice
+                    const voices = window.speechSynthesis.getVoices();
+                    const spanishVoice = voices.find(v => v.lang.startsWith('es') && (v.name.includes('Mujer') || v.name.includes('Female') || v.name.includes('Monica') || v.name.includes('Lucia') || v.name.includes('Conchita') || v.name.includes('Ximena'))) || voices.find(v => v.lang.startsWith('es'));
+
+                    if (spanishVoice) {
+                        utterance.voice = spanishVoice;
+                    }
+                    utterance.lang = 'es-ES';
+                    utterance.rate = 1.0;
+                    utterance.pitch = 1.1;
+
+                    utterance.onend = () => {
+                        isPlaying = false;
+                        textSpan.textContent = "Escuchar Manual";
+                        btn.style.background = "#2563eb"; // Blue
+                        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg><span id="read-text">Escuchar Manual</span>`;
+                    };
+
+                    window.speechSynthesis.speak(utterance);
+                    isPlaying = true;
+                    btn.style.background = "#ef4444"; // Red for stop
+                    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg><span id="read-text">Detener Audición</span>`;
+                } else {
+                    // Stop playing
+                    window.speechSynthesis.cancel();
+                    isPlaying = false;
+                    btn.style.background = "#2563eb"; // Blue
+                    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg><span id="read-text">Escuchar Manual</span>`;
+                }
+            });
+
+            // Workaround for some browsers not loading voices immediately
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+            }
+        });
+    </script>
+</body>
+
+</html>
