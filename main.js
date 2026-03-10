@@ -215,6 +215,29 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dayInput) dayInput.onchange = () => renderCaja();
         if (monthInput) monthInput.onchange = () => renderCaja();
 
+        // --- Lógica del bloque Método de Cobro ---
+        const tipoSelect = document.getElementById('caja-mov-type');
+        const metodoPagoBlock = document.getElementById('caja-metodo-pago-block');
+        const metodoBtns = document.querySelectorAll('#caja-metodo-pago-block .method-btn');
+        const metodoHidden = document.getElementById('caja-mov-method');
+
+        function actualizarVisibilidadMetodo() {
+            if (!metodoPagoBlock || !tipoSelect) return;
+            metodoPagoBlock.style.display = tipoSelect.value === 'entrada' ? 'flex' : 'none';
+        }
+
+        if (tipoSelect) tipoSelect.onchange = actualizarVisibilidadMetodo;
+        actualizarVisibilidadMetodo();
+
+        // Activar botones de método
+        metodoBtns.forEach(btn => {
+            btn.onclick = () => {
+                metodoBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                if (metodoHidden) metodoHidden.value = btn.dataset.metodo;
+            };
+        });
+
         renderCaja();
     }
 
@@ -248,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const ordered = [...dayMovs].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
         if (ordered.length === 0) {
-            cajaTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay movimientos</td></tr>';
+            cajaTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay movimientos</td></tr>';
             return;
         }
 
@@ -257,9 +280,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const typeLabel = m.type === 'entrada' ? 'Entrada' : 'Salida';
             const typeStyle = m.type === 'entrada' ? 'color: var(--success); font-weight: 600;' : 'color: var(--danger); font-weight: 600;';
             const amountTxt = `$${Number(m.amount || 0).toLocaleString()}`;
+            // Método: solo aplica a entradas
+            let metodoLabel = '';
+            if (m.type === 'entrada') {
+                const met = m.method || 'Efectivo';
+                const isMp = met === 'Mercado Pago';
+                const mpColor = isMp ? '#009ee3' : 'var(--accent)';
+                const mpIcon = isMp ? "bxl-paypal" : "bx-money";
+                metodoLabel = `<span style="display:inline-flex;align-items:center;gap:4px;color:${mpColor};font-weight:600;"><i class='bx ${mpIcon}'></i>${met}</span>`;
+            } else {
+                metodoLabel = '<span style="color:var(--text-muted);">-</span>';
+            }
             tr.innerHTML = `
                 <td>${m.date ? new Date(m.date).toLocaleDateString() : ''}</td>
                 <td style="${typeStyle}">${typeLabel}</td>
+                <td>${metodoLabel}</td>
                 <td>${m.concept || ''}</td>
                 <td>${amountTxt}</td>
                 <td>
@@ -1759,7 +1794,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cajaTable.innerHTML = '';
             const ordered = [...dayMovs].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
             if (ordered.length === 0) {
-                cajaTable.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay movimientos</td></tr>';
+                cajaTable.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay movimientos</td></tr>';
             } else {
                 ordered.forEach(m => {
                     const tr = document.createElement('tr');
@@ -1769,6 +1804,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     tr.innerHTML = `
                         <td>${m.date ? new Date(m.date).toLocaleDateString() : ''}</td>
                         <td style="${typeStyle}">${typeLabel}</td>
+                        <td><span class="status completed" style="background: rgba(255,255,255,0.05); color: var(--text-muted); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">${m.method || '-'}</span></td>
                         <td>${m.concept || ''}</td>
                         <td>${amountTxt}</td>
                     `;
@@ -2073,7 +2109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const cajaOutEl = document.getElementById('daily-caja-out');
         if (cajaOutEl) cajaOutEl.textContent = `$${cajaOut.toLocaleString()}`;
 
-        // Detailed methods
+        // Detailed methods (Sales)
         const methodsContainer = document.getElementById('daily-methods-list');
         if (methodsContainer) {
             methodsContainer.innerHTML = '';
@@ -2087,6 +2123,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     <strong>$${amount.toLocaleString()}</strong>
                 `;
                 methodsContainer.appendChild(div);
+            });
+        }
+
+        // Detailed methods (Caja)
+        const cajaMethodsContainer = document.getElementById('daily-caja-methods-list');
+        if (cajaMethodsContainer) {
+            cajaMethodsContainer.innerHTML = '';
+            const cajaByMethod = todayCaja.filter(m => m.type === 'entrada').reduce((acc, m) => {
+                const method = m.method || 'Efectivo';
+                acc[method] = (acc[method] || 0) + (Number(m.amount) || 0);
+                return acc;
+            }, {});
+
+            const methods = ['Efectivo', 'Mercado Pago'];
+            methods.forEach(m => {
+                const amount = cajaByMethod[m] || 0;
+                const div = document.createElement('div');
+                div.className = 'daily-method-item';
+                div.innerHTML = `
+                    <span>${m}</span>
+                    <strong>$${amount.toLocaleString()}</strong>
+                `;
+                cajaMethodsContainer.appendChild(div);
             });
         }
 
@@ -2129,6 +2188,22 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         });
 
+        const cajaByMethod = todayCaja.filter(m => m.type === 'entrada').reduce((acc, m) => {
+            const method = m.method || 'Efectivo';
+            acc[method] = (acc[method] || 0) + (Number(m.amount) || 0);
+            return acc;
+        }, {});
+
+        let cajaMethodsHtml = '';
+        ['Efectivo', 'Mercado Pago'].forEach(m => {
+            cajaMethodsHtml += `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>${m}:</span>
+                    <span>$${(cajaByMethod[m] || 0).toLocaleString()}</span>
+                </div>
+            `;
+        });
+
         ticketArea.innerHTML = `
             <div style="width: 100%; max-width: 80mm; background: #fff; color: #000; padding: 10px; font-family: monospace;">
                 <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 10px; margin-bottom: 10px;">
@@ -2160,6 +2235,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 10px;">
                     <h4 style="margin: 0 0 10px 0; font-size: 12px; text-align: center;">DETALLE DE VENTAS</h4>
                     ${methodsHtml}
+                </div>
+
+                <div style="border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 10px;">
+                    <h4 style="margin: 0 0 10px 0; font-size: 12px; text-align: center;">DETALLE DE CAJA (ENTRADAS)</h4>
+                    ${cajaMethodsHtml}
                 </div>
 
                 <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-bottom: 15px; border-top: 1px solid #000; padding-top: 5px;">
@@ -2208,13 +2288,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const type = document.getElementById('caja-mov-type') ? document.getElementById('caja-mov-type').value : 'entrada';
             const concept = document.getElementById('caja-mov-concept') ? document.getElementById('caja-mov-concept').value.trim() : '';
             const amount = document.getElementById('caja-mov-amount') ? parseFloat(document.getElementById('caja-mov-amount').value) : 0;
+            const methodEl = document.getElementById('caja-mov-method');
+            const method = (type === 'entrada' && methodEl) ? (methodEl.value || 'Efectivo') : '';
 
             if (!date || !concept || !Number.isFinite(amount) || amount <= 0) {
                 showToast('Completa fecha, concepto y monto', 'error');
                 return;
             }
 
-            const mov = { id: Date.now(), date: date, type: type, concept: concept, amount: amount };
+            const mov = { id: Date.now(), date: date, type: type, concept: concept, amount: amount, method: method };
             cajaMovs.unshift(mov);
             saveData();
 

@@ -1018,13 +1018,14 @@
                                 <tr>
                                     <th>Fecha</th>
                                     <th>Tipo</th>
+                                    <th>Método</th>
                                     <th>Concepto</th>
                                     <th>Monto</th>
                                 </tr>
                             </thead>
                             <tbody id="report-caja-table">
                                 <tr>
-                                    <td colspan="4"
+                                    <td colspan="5"
                                         style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay
                                         movimientos</td>
                                 </tr>
@@ -1161,6 +1162,24 @@
                                 </select>
                             </div>
                         </div>
+                        <!-- Método de Pago (solo visible en Entradas) -->
+                        <div id="caja-metodo-pago-block" class="form-group"
+                            style="display: flex; flex-direction: column; gap: 8px;">
+                            <label>Método de Cobro</label>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <button type="button" id="caja-metodo-efectivo" class="method-btn active"
+                                    data-metodo="Efectivo"
+                                    style="flex:1; min-width: 120px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <i class='bx bx-money'></i> Efectivo
+                                </button>
+                                <button type="button" id="caja-metodo-mercadopago" class="method-btn"
+                                    data-metodo="Mercado Pago"
+                                    style="flex:1; min-width: 120px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <i class='bx bx-mobile-alt'></i> Mercado Pago
+                                </button>
+                            </div>
+                            <input type="hidden" id="caja-mov-method" value="Efectivo">
+                        </div>
                         <div class="form-group">
                             <label>Concepto</label>
                             <input type="text" id="caja-mov-concept" required
@@ -1188,6 +1207,7 @@
                                 <tr>
                                     <th>Fecha</th>
                                     <th>Tipo</th>
+                                    <th>Método</th>
                                     <th>Concepto</th>
                                     <th>Monto</th>
                                     <th>Acciones</th>
@@ -1195,7 +1215,7 @@
                             </thead>
                             <tbody id="caja-table">
                                 <tr>
-                                    <td colspan="5"
+                                    <td colspan="6"
                                         style="text-align: center; padding: 2rem; color: var(--text-muted);">No hay
                                         movimientos</td>
                                 </tr>
@@ -1613,8 +1633,15 @@
                 </div>
 
                 <div class="methods-breakdown">
-                    <h3 style="margin-bottom: 1rem; font-size: 1rem; font-weight: 600;">Desglose por Medio de Pago</h3>
-                    <div id="daily-methods-list" style="display: grid; gap: 10px;">
+                    <h3 style="margin-bottom: 1rem; font-size: 1rem; font-weight: 600;">Desglose por Medio de Pago
+                        (Ventas)</h3>
+                    <div id="daily-methods-list" style="display: grid; gap: 10px; margin-bottom: 1.5rem;">
+                        <!-- Dynamic content -->
+                    </div>
+
+                    <h3 style="margin-bottom: 1rem; font-size: 1rem; font-weight: 600;">Desglose por Medio de Cobro
+                        (Caja)</h3>
+                    <div id="daily-caja-methods-list" style="display: grid; gap: 10px;">
                         <!-- Dynamic content -->
                     </div>
                 </div>
